@@ -1,0 +1,37 @@
+library(Momocs)
+nef2OutCoe <- function(path){
+  # readlines
+  x <- readLines(path)
+  
+  # detect harm number 
+  h <- x %>% grep("HARMO", ., value=TRUE) %>% gsub("^#.* ", "", .) %>% as.numeric()
+  # trim first lines
+  x <- x[-(1:2)]
+  # deduce length
+  n <- length(x)/(h+1)
+  
+  # splitting vector, and use it
+  f <- rep(1:n, each=(h+1))
+  xs <- split(x, f)
+  # given a single shape from above, turn it into a numeric vector
+  nef1 <- function(.x){
+    y <- .x[-1] %>% paste(collapse=" ") %>% strsplit(" ") %>% `[[`(1)
+    y[nchar(y)>0] %>% as.numeric()
+  }
+  # turn xs into a matrix via nef1
+  res <- lapply(xs, nef1) %>% do.call("rbind", .)
+  
+  # rearrange coeffs
+  res <- res[, do.call("c", lapply(1:4, seq, to=h*4, by=4))]
+  # add dimnames
+  colnames(res) <- paste0(rep(LETTERS[1:4], each=h), rep(1:h, 4))
+  rownames(res) <- sapply(xs, `[`, 1)
+  
+  # return this beauty
+  res
+}
+coe <- nef2OutCoe("~/Desktop/SBSH5102018_nef.txt")
+OutCoe(coe, method="efourier", norm=F) %>% PCA %>% plot_PCA()
+
+
+
