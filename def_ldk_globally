@@ -1,0 +1,10 @@
+# based on a M Wallace need:
+
+#' Coo any Coo object
+#' ids a vector of ids to define as landmarks, in each shape of the Coo
+def_ldk_globally <- function(Coo, ids){
+  Coo$ldk <- ids %>% list %>% rep(length(Coo))
+  Coo
+}
+
+#' bot %>% coo_sample(24) %>% def_ldk_globally(c(1, 12)) %>% coo_bookstein() %>% stack
